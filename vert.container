@@ -1,0 +1,31 @@
+[Unit]
+Description=Vert File Converter Service
+After=network-online.target
+
+[Container]
+Image=ghcr.io/vert-sh/vert:latest
+ContainerName=vert
+AutoUpdate=registry
+LogDriver=k8s-file
+PodmanArgs=--log-opt=max-size=10m --log-opt=max-file=3
+
+# Networking
+# Change 'localhost' to your server's IP or DNS name
+PublishPort=3123:80
+Environment=PUB_HOSTNAME=localhost:3123
+
+# Environment Configuration
+Environment=PUB_ENV=production
+Environment=PUB_DISABLE_ALL_EXTERNAL_REQUESTS=false
+Environment=PUB_DONATION_URL=https://donations.vert.sh
+Environment=TZ=America/New_York
+
+# Performance/Privacy: Use tmpfs for the /tmp directory to keep conversions in RAM
+Volume=tmpfs:/tmp
+
+[Service]
+Restart=unless-stopped
+RestartSec=10
+
+[Install]
+WantedBy=default.target
